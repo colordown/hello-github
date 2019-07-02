@@ -7,7 +7,11 @@ Vinayakumar R, Soman K P, Poornachandran P. Long short-term memory based operati
 - 会议：International Conference on Advances in Computing, Communications and Informatics (ICACCI). IEEE, 2017: 236-242.
 
 - 简介：
-
+这篇文章提出用S-LSTM来进行系统异常的检测，与以往工作相比，这篇文章提出的方法有如下两个优点：1.S-LSTM可以学习日志的稀疏表示，因此降低了对输入日志
+数据的要求；2.该模型学习短时间间隔内的日志数据流，可以诊断细粒度的系统异常。
+但其实这篇文章的槽点还是很多（后来查了一下这个会，都不是CCF C类），个人总结一下其存在的问题：1.方法本质上无任何创新，用了S-LSTM学习了正常日志流的特征，
+然后再进行异常检测，（除了模型的选取）与其他人工作无异；2.论文花了一半篇幅介绍S-LSTM和其他基础工作，不像学术论文而是一个项目报告；3.论文里列出很多公式，
+其实大部分都不需要写出来，总体晦涩难懂；4.文章写作水平不行，英语表达和整个逻辑都存在硬伤。5.最后的实验作者提出自己的方法达到超过99%的准确率，结果难以让人信服。
 
 
 2、Recurrent Neural Network Attention Mechanisms for Interpretable System Log Anomaly Detection
@@ -19,6 +23,16 @@ arXiv preprint arXiv:1803.04967, 2018.
 - 期刊： arXiv,2018
 
 - 简介：
+   这篇文章同样是利用LSTM进行系统异常检测的工作。同以往工作相比，这篇文章有很大的创新：1.在特征提取阶段并未将日志文本进行模板挖掘，
+   而是把日志文本看成语言，通过自然语言处理中的分词方法进行token切分，日志的表现形式就是token的组合(而不是通过模板转换成特征向量)。
+   2.文章虽然是基于LSTM模型，但是在此基础上添加不同类型的注意力机制，并对比了不同注意力机制之间的性能差异。
+   具体做法：1、基于LSTM模型，输入是每个token的embedding，根据其是否双向又分为Event Model和Bidirectional Event Model两类，
+   为了提升日志语句间的关联，每个日志语句经过LSTM后的每个隐藏层状态通过求和联系在一起。
+   2、以上述框架为基础，再构建一层单位时间间隔内以语句为输入的Context LSTM，由此得到Tired Event Model和Tired Bidirectional Event Model。
+   3、注意力机制：注意力机制根据不同类型应用在不分层的EM和BEM上，作者一共引入了四类不同的注意力机制：Fixed Attention；Syntax Attention；
+   Semantic Attention；Semantic Attention。
+   本文在实验部分花了很多心思，设计了许多对比实验，对比分析了是否使用注意力机制以及不同注意力机制对系统异常检测任务的性能影响，
+  在一定程度上合理地解释了模型的有效性，也很有说服力！
 
 
 
@@ -30,7 +44,14 @@ Proceedings of the 33rd ACM/IEEE International Conference on Automated Software 
 
 - 期刊：International Conference on Automated Software Engineering. ACM, 2018: 178-189.
 
-- 简介：
+- 简介： 
+这是香港中文大学团队有关日志分析的又一篇文章，这篇文章通过统计分析的方式归纳出日志打印的许多共性特征（聚焦常量部分），对于指导日志打印以及加深对系统日志的理解
+有很大帮助。
+本文分析了10个开源Java项目和7个开源C#项目中的115159条日志打印语句，针对其中的日志打印常量（logging descriptions），根据其特征分成了：程序操作常量、
+错误信息常量、语义描述常量。通过一系列分析（数理统计、n-gram模型、生成模型，交叉熵等）作者得出了几个重要结论：1.日志常量可以根据其特性大致分成三类：程序操作常量、
+错误信息常量、语义描述常量。2.同普通的英语文本相比，日志文本更有迹可循。3.不同项目间的日志常量规律（n-gram特征）差异很大，日志常量的特征是局部化的。
+4、作者以已有的日志常量建立生成模型进行预测，结果表明日志常量是可预测的，具体而言BLEU-4指标达到6.4%到34.3%，Pre-10指标达到16.96%到49.04%。
+
 
 
 
@@ -43,3 +64,11 @@ Proceedings of the 33rd ACM/IEEE International Conference on Automated Software 
 - 会议：Proceedings of the 26th Conference on Program Comprehension. ACM, 2018: 167-177.
 
 - 简介：
+本文介绍了一种新颖的日志模板挖掘算法，其核心思想是想让日志模板更可能多的覆盖不同日志同时保证日志模板之间的差异最大化，本文采用的方法基于GA算法。
+具体而言，本文是NSGA-Ⅱ（目前最流行的多目标遗传算法之一）在日志模板挖掘领域的有效应用。（文章花了较多的篇幅介绍遗传算法和日志模板挖掘这一任务，这里不再赘述）
+基于NSGA-Ⅱ进行日志模板挖掘的核心思路：建立遗传算法的进化指标，一个是frequency（日志模板匹配到的日志数），一个是specificity（不同日志模板的差异性），
+在迭代过程中逐步淘汰不满足这两项指标的个体；建立个体（单条日志）的编码方式，日志的最小单位是单独的token，一个模板就是几个token的组合，这个问题的解空间
+就是不同模板的集合；遗传、变异和淘汰的过程：随机选取个体并交换其token模拟遗传和变异过程，然后淘汰不满足条件的新个体。
+在实验部分，本文同Drain等经典方法进行了对比，不过在通用指标上，该方法的表现差强人意，达到70%以上的Precision和Recall。不过这个方法无需人工的干预和指导，
+完全是用随机的方法让模型自己学习最好的结果。
+
