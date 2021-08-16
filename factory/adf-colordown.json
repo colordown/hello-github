@@ -1,0 +1,9 @@
+{
+	"name": "adf-colordown",
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e62e2f1b-5a83-45b1-9a7a-822e26247dff",
+		"tenantId": "20f7dc02-58f2-4593-bba4-58b009ee0b52"
+	}
+}
